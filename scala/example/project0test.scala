@@ -1,3 +1,7 @@
+/**
+  *   This is a scala/sbt program that allows the user to CRUD with the Data from the AKC registry
+  */
+
 package example
 
 import org.mongodb.scala._
@@ -7,13 +11,10 @@ import org.mongodb.scala.model.Projections._
 import org.mongodb.scala.model.Sorts._
 import org.mongodb.scala.model.Aggregates._
 import org.mongodb.scala.model.Updates._
-//import scala.util.parsing.json._
-//import org.mongodb.scala.model.Indexes._
-
-//import org.mongodb.scala.bson._
-
 import example.Helpers._
 import java.io.FileNotFoundException
+
+
 
 
 
@@ -67,7 +68,8 @@ object MongoDemo {
       //to be ran recursively
       filterCollection = tempCollection 
       filterDirectory()
-    }
+    }//End of 'tempCollectionCreation()'
+
 
   def refineFunction(query: Seq[Document]){
     println()
@@ -113,9 +115,7 @@ object MongoDemo {
       database = client.getDatabase(a)
       println(s"You are now using the $a Database")  
 
-
       directory()
-
     }
 
     //Upload a File from the computer
@@ -170,7 +170,8 @@ object MongoDemo {
       }//End of readFilePrompt()
       readFilePrompt()
       directory()
-    }//C:/Users/theod/AIORevature/Project0/JSONDogBreedDatasetv2.json
+      //C:/Users/theod/AIORevature/Project0/JSONDogBreedDatasetv2.json
+    }//End of 'readFile()'
 
 
 
@@ -194,7 +195,7 @@ object MongoDemo {
       collection = database.getCollection(s"$b")
       filterCollection = collection
       directory()
-    }
+    }//End of 'useCollection()'
     
     //Show Collections
     def showCollections(){
@@ -206,7 +207,7 @@ object MongoDemo {
       database.listCollectionNames().printResults("Collections:\n")
       space()
       directory()
-    }
+    }//End of 'showCollection()'
 
     //Displays Collections without returning to the directory
     def showCollectionsInternal(){
@@ -217,7 +218,7 @@ object MongoDemo {
       //Prints the Collections
       database.listCollectionNames().printResults("Collections:\n")
       space()
-    }
+    }//End of 'showCollectionsInternal()'
 
     def dropCollection(){
       val b: String = scala.io.StdIn.readLine("Which Collection would you like to Drop?: ")
@@ -228,21 +229,21 @@ object MongoDemo {
       }
       catch{
         case ex: IllegalArgumentException => {
-            println("Illegal Argument Exception")
-            val a : String = scala.io.StdIn.readLine("Would you like to try again? (yes or no): ").toLowerCase()
-            a match {
-              case "yes" => dropCollection()
-              case "no" => directory()
-            }
+          println("Illegal Argument Exception")
+          val a : String = scala.io.StdIn.readLine("Would you like to try again? (yes or no): ").toLowerCase()
+          a match {
+            case "yes" => dropCollection()
+            case "no" => directory()
           }
-      }
+        }//End of 'case ex:'
+      }//End of 'catch'
       println()
       println(s"$b has succesfully been Dropped. Please select a collection to explore.")
       println()
       useCollection()
-    }
+    }//End of 'dropCollection()'
 
-     //An internal Document counter that doesn't return to directory
+    //An internal Document counter that doesn't return to directory
     def docCountInternal() = {
       collection.count().headResult()
     }
@@ -384,62 +385,101 @@ object MongoDemo {
           .printResults()
         space()
         directory()       
-      }
+      }//End of 'finally'
     }//End of updateBreed()
 
 
+
+
+
     def removeBreed() {
-
       //For the first iteration, jump to "//Establishing Breed"
-
+      //Establishing Breed
+      var breed: String = scala.io.StdIn.readLine("which Breed would you like to Remove?: ").toLowerCase().trim()
+      breed match {
+        case "exit" => directory()
+        case _ => confirmationRecursion()
+      }
+      
 
       //Confirmation Recursion  
       def confirmationNo(){
         println("Would you like to change the breed or exit?")
         println("[1] Change Breed\n[2] Exit")
-        val z : String = scala.io.StdIn.readLine()
-        z match {
-          case "1" => removeBreed
-          case "2" =>
+        val a : String = scala.io.StdIn.readLine()
+        a match {
+          case "1" => removeBreed()
+          case "2" => directory()
+          case "exit" => directory()
           case _ => {
             print("Im sorry, that's not an option")
             println()
             confirmationNo()
           }  
-        }
+        }//End of 'a match'
       }//end of confirmationNo()
 
+/* 
+
       //Establishing Breed
-      var f: String = scala.io.StdIn.readLine("which Breed would you like to Remove?: ")
+      var f: String = scala.io.StdIn.readLine("which Breed would you like to Remove?: ").trim()
 
+
+ */
       //Confirmation of Deletion
-      var a: String = scala.io.StdIn.readLine(s"Confirm: Remove the $f from the AKC? (yes or no): ")
-      a match{
-        case "yes"|"Yes"|"YES" => {
-          val firstcount = docCountInternal()
-          collection
-            .deleteOne(equal("Breed", f))
-            .printHeadResult("Delete Result: ")
-          val secondcount = docCountInternal()
-          space()
+      def confirmationRecursion(){
+        var confirmation: String = scala.io.StdIn.readLine(s"Confirm: Remove the $breed from the AKC? (yes or no): ").toLowerCase().trim()
+        confirmation match{
+          case "yes" => {
+            breed = breed.split(" ").map(_.capitalize).mkString(" ")
+            val firstcount = docCountInternal()
+            collection
+              .deleteOne(equal("Breed", breed))
+              .printHeadResult("Delete Result: ")
+            val secondcount = docCountInternal()
+            space()
 
-          //User friendly confirmation of deletion
-          if (firstcount > secondcount) {
-            println(
-              s"The $f has been removed from the American Kennel Club Registry"
-            )
-          }
-          if (firstcount == secondcount) {
-            println(
-              s"The $f has been NOT been removed. Confirm Spelling is Accurate"
-            )
-          }
-        } 
-        case "no"|"No"|"NO" => confirmationNo()
-      }
-    space()
-    directory()
+            //User friendly confirmation of deletion
+            if (firstcount > secondcount) {
+              println(
+                s"The $breed has been removed from the American Kennel Club Registry"
+              )
+            }
+            if (firstcount == secondcount) {
+              println(s"The $breed has NOT been removed. Confirm Spelling is Accurate")// and First Letter is Capitalized")
+              println()
+              def failedRemoveRecurse(){
+                var a: String = scala.io.StdIn.readLine("Would you like to try again? (yes or no) : ").toLowerCase().trim()
+                a match{
+                  case "yes" => removeBreed()
+                  case "no" => directory()
+                  case _ => {
+                    print("Im sorry, that's not an option")
+                    println()
+                    failedRemoveRecurse()
+                  }
+                }//End of 'a match'
+              }//End of failedRemoveRecurse()
+
+              failedRemoveRecurse()
+            }//End of 'if (firstcount == secondcount)'
+
+            directory()
+          }//End of 'yes'
+          case "no" => confirmationNo()
+          case _ => {
+            println("I'm sorry that's not an option")
+            confirmationRecursion() 
+          }// End of 'case _' 
+        } //End of 'confirmation match'
+      }//End of confirmationRecursion()
+  
+      space()
     }//End of removeBreed()
+
+
+
+
 
 
     def searchByBreedName() {
@@ -449,6 +489,7 @@ object MongoDemo {
         .projection(fields(include("Breed"), excludeId()))
         .printHeadResult()
       space()
+      directory()
     }//End of searchByBreedName()
     
 
@@ -487,27 +528,8 @@ object MongoDemo {
           println()
           searchByGroup()
         }
-      }     
+      }//End of 'group' match
     }// end of searchByGroup() 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -527,8 +549,8 @@ object MongoDemo {
             println("I'm sorry, that's not an option")
             searchBySizePrompt()
           }
-        }
-      }//end of searchBySizePrompt()
+        }//End of 'z' match
+      }//End of searchBySizePrompt()
       searchBySizePrompt()
 
       //Establishing Units
@@ -548,12 +570,13 @@ object MongoDemo {
             println("I'm sorry, that's not an option")
             maxOrMin()
           }
-        }
-      }//end of maxOrMin()
+        }//End of 'a'
+      }//End of maxOrMin()
       maxOrMin()
 
       //The Max and Min functions need to be seperate becauase the collection filter (Results)
-      // requires a different directive for each (lte for max and gte for min)
+      // requires a different directive for each ('<='' for max and '>=' for min)
+
       //Max////////////////
       def max(){
         var value: Any = ""
@@ -568,14 +591,8 @@ object MongoDemo {
            println("Please enter a Number")
            max()
           }
-        }
-
+        }//End of 'catch'
         //Results
-/*         
-        filterCollection
-          .find(lte(s"Max $dimension", value)).count().headResult
- */
-        
         filterCollection
           .find(lte(s"Max $dimension", value))
           .projection(fields(include("Breed", "Popularity Ranking",s"Max $dimension"), excludeId()))
@@ -587,7 +604,8 @@ object MongoDemo {
         var query = filterCollection.find(lte(s"Max $dimension", value)).results()
         refineFunction(query)
    
-      }// end of max()
+      }//End of max()
+
 
       //Min////////////////
       def min(){
@@ -603,7 +621,7 @@ object MongoDemo {
            println("Please enter a Number")
            min()
           }
-        }
+        }//End of 'catch'
         
         filterCollection
           .find(gte(s"Min $dimension", value))
@@ -614,10 +632,7 @@ object MongoDemo {
 
         var query = filterCollection.find(gte(s"Min $dimension", value)).results()
         refineFunction(query)
-
-
       }//end of min()
-
     }//end of searchBySize()
 
 
@@ -692,9 +707,9 @@ object MongoDemo {
             case _ => {
               println("I;m sorry, that's not an option")
               traitPrompt()
-            }
-          }
-        }
+            }//End of 'case _'
+          }//End of 'a' match
+        }//End of traitPrompt()
         traitPrompt()
         println()
         def highLowprompt(){
@@ -705,160 +720,366 @@ object MongoDemo {
             case _ =>{
               println("I'm sorry, that's not an option")
               highLowprompt()
-            }
-          }
-        }
+            }//End of 'case _'
+          }//End of 'b' match
+        }//End of highLowPrompt()
         highLowprompt()
     }//end of searchByTrait()
-
-/* 
-    def agg(){
-      var aspect = ""
-      var range = ""
-      var eoA =""
-      var maxChoice = false
-      var minChoice = false
-
-      def aggTree(){  
-
-        def greet(){
-          println("Are you interested in exploring Groups by:\n[1] Height\n[2] Weight\n[3] Life Expectancy?")
-          print("Please enter the corresponding number: ")
-          val a : String = scala.io.StdIn.readLine()
-          a match{
-            case "1" => aspect = "Height"
-            case "2" => aspect = "Weight"
-            case "3" => aspect = "Life Expectancy"
-            case _ => {
-              space()
-              println("Oh no! It looks like that isn't an option!")
-              greet()
-            }        
-          }
-        }
-
-        def maxOrMin(){
-          println("Are you more interested in exploring the Maximums or Minimums of each Group?:\n[1] Maximum\n[2] Minimum\n")
-          print("Please enter the corresponding number: ")
-          val a: String = scala.io.StdIn.readLine()
-          a match{
-            case "1" =>{
-             range = "Max"
-             maxChoice = true
-            }
-            case "2" =>{
-             range = "Min"
-             minChoice = true
-            }
-            case _ => {
-              space()
-              println("Oh no! It looks like that isn't an option!")
-              maxOrMin()
-            }    
-          }
-        }
-
-        def xTorAvg(){ ////Change Extremes to Upper and lower limits
-          println("Are you more interested in exploring the Extremes or Averages of each Group?:\n[1] Extremes\n[2] Averages\n")
-          print("Please enter the corresponding number: ")
-          val a : String = scala.io.StdIn.readLine()
-          a match{
-            case "1" => extremeCase()
-            case "2" => aggAvg()
-            case _ => {
-              space()
-              println("Oh no! It looks like that isn't an option!")
-              xTorAvg()
-            }    
-          }
-        }
-
-
-        def extremeCase(){
-          if (maxChoice == true){          
-            space()
-            import org.mongodb.scala.model.Accumulators._
-            println(s"Here are the $range $aspect's of all the Groups!\n")
-            collection.
-            aggregate(
-              Seq(
-                sort(orderBy(descending(s"$range $aspect"))),
-                group(
-                  "$Group",
-                  max(s"$range $aspect", "$"+s"$range "+ s"$aspect"),            
-                  first("Breed", "$Breed")
-                    ),
-                sort(orderBy(descending(s"$range $aspect"))),
-              )
-            )
-            .printResults()                       
-            }
-
-          if (minChoice == true){           
-            space()
-            import org.mongodb.scala.model.Accumulators._
-            println(s"Here are the $range $aspect's of all the Groups!\n")
-            collection.
-            aggregate(
-              Seq(
-                sort(orderBy(descending(s"$range $aspect"))),
-                group(
-                  "$Group",
-                  min(s"$range $aspect", "$"+s"$range "+ s"$aspect"),            
-                  last("Breed", "$Breed")
-                    ),
-                sort(orderBy(ascending(s"$range $aspect"))),
-              )
-            )
-            .printResults()                       
-            }           
-        }
-
-
-
-          def aggAvg(){
-            import org.mongodb.scala.model.Accumulators._
-            collection.
-              aggregate(
-                Seq(
-                  sort(orderBy(descending(s"$range $aspect"))),
-                  group(
-                    "$Group",
-                    avg(s"$range $aspect", "$"+s"$range "+ s"$aspect")           
-                      ),
-                  sort(orderBy(descending(s"$range $aspect"))),
-                  project(fields(include(s"$range $aspect")))
-                
-                )
-              )
-              .printResults()
-            //Alt project w/ 'round': project(fields(include(round("Max Weight",2))))
-          }
-
-
-        greet()
-        maxOrMin()
-        xTorAvg()
-      }  
-
-      //Call Function
-      aggTree()
-    }
- */
-
 
 
 
     //Program specifc functions////////////////////////////////
-/* 
-    If the user chooses to further refine their search after using a "searchBy" function, this directory
-    is called rather than the global directory (directory())
-*/
+
+      def groupBy(){
+
+    val playersDoc: Any =""
+    var aggregate = ""
+    var criteria = ""
+    var aspect = 0
+
+    def aspectList(){
+      println("[1] Group\n[2] Min Height\n[3] Max Height\n" +
+        "[4] Min Weight\n[5] Max Weight\n[6] Affection For Family\n" +
+        "[7] Good With Young Children\n[8] Good With Other Dogs\n" +
+        "[9] Shedding Level\n[10] Coat Grooming Frequency\n[11] Drooling Level\n" +
+        "[12] Coat Type\n[13] Coat Length\n[14] Openness To Strangers\n" +
+        "[15] Playfulness Level\n[16] Protective Nature\n[17] Adaptability\n" +
+        "[18] Trainability\n[19] Energy\n[20] Barking\n[21] Mental Stimulation Needs\n"              
+      )
+    }//End of aspectList()
+
+    def groupByPrompt(){   
+      println   
+      println("Select the Criteria you would like to Group By:")
+      aspectList()
+        def groupByPromptRecurse(){
+        val aspect: String = scala.io.StdIn.readLine("Please enter the corresponding number: ")
+        aspect match{
+          case "1" => aggregate = "Group"
+          case "2" => aggregate = "Min Height"          
+          case "3" => aggregate = "Max Height"                  
+          case "4" => aggregate= "Min Weight"       
+          case "5" => aggregate = "Max Weight"                 
+          case "6" => aggregate= "Affection For Family"
+          case "7" => aggregate= "Good With Young Children"          
+          case "8" => aggregate= "Good With Other Dogs"                  
+          case "9" => aggregate= "Shedding Level"       
+          case "10" => aggregate = "Coat Grooming Frequency"                 
+          case "11" => aggregate= "Drooling Level" 
+          case "12" => aggregate = "Coat Type"        
+          case "13" => aggregate= "Coat Length"
+          case "14" => aggregate = "Openness To Strangers"       
+          case "15" => aggregate = "Playfulness Level"        
+          case "16" => aggregate = "Protective Nature"        
+          case "17" => aggregate= "Adaptability"        
+          case "18" => aggregate= "Trainability"       
+          case "19" => aggregate= "Energy"       
+          case "20" => aggregate= "Barking"        
+          case "21" => aggregate= "Mental Stimulation Needs"
+          case _ => {
+            println("I'm sorry, that's not an option")
+            groupByPromptRecurse()
+          }//End of 'case _'
+        }//End of 'a' match       
+      }//End of groupByPromptRecurse()
+      groupByPromptRecurse()
+      avgCriteriaGroup()
+    }//End of groupByPrompt()
+            
+
+    def avgCriteriaGroup(){
+
+      println(s"Fill in the Blank: You would like to see the average ______ by $aggregate")
+
+      aspectList()
+      def avgCriteriaGroupRecurse(){
+        val a: String = scala.io.StdIn.readLine("Please enter the corresponding number: ")
+        a match{
+          case "1" =>{
+            criteria = "Group" 
+            aspect=1
+          }
+          case "2" => {
+            criteria = "Min Height"          
+            aspect=2
+          }
+          case "3" =>{
+          criteria = "Max Height"
+          aspect=3
+          }                   
+          case "4" =>{
+            criteria = "Min Weight" 
+            aspect=4
+          }      
+          case "5" =>{
+          criteria = "Max Weight"
+          aspect=5
+          }             
+          case "6" =>{
+            criteria = "Affection For Family"
+            aspect=6
+          }
+          case "7" =>{
+          criteria = "Good With Young Children"  
+          aspect=7  
+          }       
+          case "8" =>{
+          criteria = "Good With Other Dogs"  
+          aspect=8
+          }                 
+          case "9" =>{
+          criteria = "Shedding Level"   
+          aspect=9
+          }     
+          case "10" =>{
+          criteria = "Coat Grooming Frequency"  
+          aspect=10
+          }                
+          case "11" =>{
+          criteria = "Drooling Level" 
+          aspect=11
+          } 
+          case "12" =>{
+          criteria = "Coat Type"
+          aspect=12
+          }          
+          case "13" =>{
+            criteria = "Coat Length"
+            aspect=13
+          } 
+          case "14" =>{
+          criteria = "Openness To Strangers" 
+          aspect=14
+          }       
+          case "15" =>{
+            criteria = "Playfulness Level"   
+            aspect=15
+          }      
+          case "16" =>{
+          criteria = "Protective Nature"   
+          aspect=16
+          }      
+          case "17" =>{
+            criteria = "Adaptability"     
+            aspect=17
+          }    
+          case "18" =>{
+          criteria = "Trainability"    
+          aspect=18
+          }    
+          case "19" =>{
+          criteria = "Energy"
+          aspect=19
+          }         
+          case "20" =>{
+          criteria = "Barking"  
+          aspect=20
+          }        
+          case "21" =>{
+          criteria = "Mental Stimulation Needs"
+          aspect=21
+          }  
+          case _ => {
+            println("I'm sorry, that's not an option")
+            avgCriteriaGroupRecurse()
+          }//End of 'case _'
+        }//End of 'a' match
+      }//End of avgCriteriaGroupRecurse()
+      
+      avgCriteriaGroupRecurse()
+      traitAgg()
+    }//End of avgCriteriaGroup()
+
+
+
+
+    def traitAgg(){
+      
+      import org.mongodb.scala.model.Accumulators._
+      println(s"Average $aggregate by $criteria")
+      val results = collection.
+            aggregate(
+              Seq(              
+                group(
+                  "$"+ aggregate,
+                  avg(criteria,"$"+ criteria),                            
+                    ),
+                sort(descending(criteria)),           
+              )
+            )
+            .results()
+
+      import net.liftweb.json._
+      implicit val formats = DefaultFormats
+
+      for (dog <- results){
+        val jsonString = dog.toJson().toLowerCase().replaceAll("\\s","")
+        val jValue = parse(jsonString)
+
+        aspect match{
+          case 1 =>  {
+            //criteria = "Group"
+            case class Dog(_id: String, group: String)
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.group}").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }
+          case 2 => {
+            //criteria = "Min Height"
+            case class Dog(_id: String, minheight: Double)
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.minheight}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)            
+          }         
+          case 3 => {
+            //criteria = "Max Height"
+            case class Dog(_id: String, maxheight: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxheight}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }                 
+          case 4 =>{
+            //criteria = "Min Weight"
+            case class Dog(_id: String, minweight: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.minweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b) 
+            }      
+          case 5 =>{
+            //criteria = "Max Weight"
+            case class Dog(_id: String, maxweight: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }              
+          case 6 =>{             
+            //criteria = "Affection For Family"
+            case class Dog(_id: String, affectionforfamily: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.affectionforfamily}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          } 
+          case 7 =>{
+            //criteria = "Good With Young Children"
+            case class Dog(_id: String, goodwithyoungchildren: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.goodwithyoungchildren}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+            }           
+          case 8 =>{
+            //criteria = "Good With Other Dogs"
+            case class Dog(_id: String, goodwithotherdogs: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.goodwithotherdogs}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }                   
+          case 9 =>{
+            //criteria = "Shedding Level"
+            case class Dog(_id: String, sheddinglevel: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.sheddinglevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }        
+          case 10 =>{
+            //criteria = "Coat Grooming Frequency"
+            case class Dog(_id: String, coatgroomingfrequency: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coatgroomingfrequency}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }                  
+          case 11 =>{
+            //criteria = "Drooling Level"
+            case class Dog(_id: String, droolinglevel: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.droolinglevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          } 
+          case 12 =>{
+            //criteria = "Coat Type"
+            case class Dog(_id: String, coattype: String)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coattype}").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }          
+          case 13 =>{
+            //criteria = "Coat Length"
+            case class Dog(_id: String, coatlength: String)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coatlength}").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }  
+          case 14 =>{ 
+            //criteria = "Openness To Strangers"
+            case class Dog(_id: String, opennesstostrangers: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.opennesstostrangers}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }       
+          case 15 =>{
+            //criteria = "Playfulness Level"
+            case class Dog(_id: String, playfulnesslevel: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.playfulnesslevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }          
+          case 16 =>{
+            //criteria = "Protective Nature"
+            case class Dog(_id: String, protectivenature: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.protectivenature}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }        
+          case 17 =>{
+          //criteria = "Adaptability"
+            case class Dog(_id: String, adaptability: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.adaptability}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }         
+          case 18 =>{
+            //criteria = "Trainability"
+            case class Dog(_id: String, trainability: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.trainability}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }        
+          case 19 =>{
+            //criteria = "Energy"
+            case class Dog(_id: String, energy: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.energy}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }         
+          case 20 =>{
+            //criteria = "Barking"
+            case class Dog(_id: String, barking: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.barking}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }          
+          case 21 =>{
+            //criteria = "Mental Stimulation Needs"
+            case class Dog(_id: String, mentalstimulationneeds: Double)          
+            val playersDoc = jValue.extract[Dog]
+            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.mentalstimulationneeds}%.2f").split(" ").map(_.capitalize).mkString(" ")
+            println(b)
+          }  
+
+        }//End of 'aspect match'
+      }//End of 'for (dog <- results)'            
+    }//End of 'traitAgg()'
+
+          
+    groupByPrompt()
+    directory()
+  }//End of groupBy()
+
     def filterDirectory(){
 
-      //!*!*!*!*!*!!*!*!*!*ADD AGG() TO THIS
-
-
+      /* 
+      If the user chooses to further refine their search after using a "searchBy" function, this directory
+      is called rather than the global directory (directory())
+      */
       val a: String = scala.io.StdIn.readLine("Enter next Search Function: ")
       a match{
         case "exit" => directory()
@@ -877,8 +1098,9 @@ object MongoDemo {
          println()
          filterDirectory()
         }
-      }
+      }//End of 'a match'
     }//End of filterDirectory()
+
 
 
     //Back-end Dirctory
@@ -924,654 +1146,14 @@ object MongoDemo {
           println("groupBy()")
 
           directory()
-        }
+        }//End of 'case "--help"'
         case _ =>{
          println("That's not a recognized function. Try --help")
          println()
          directory()
         }
-      }
-
-    }
-
-
-
-
-
-
-    
-    //agg()
-
-
-/* 
-    def aggAvg(){
-
-      var range = "Max"
-      var aspect = "Height"
-      var aggregate = "$Energy"
-
-
-
-      import org.mongodb.scala.model.Accumulators._
-      println(s"Average $range $aspect by $aggregate")
-      val results = collection.
-            aggregate(
-              Seq(
-                sort(orderBy(descending(s"$range $aspect"))),
-                group(
-                  aggregate,
-                  avg(s"$range $aspect", "$"+s"$range "+ s"$aspect")           
-                    ),
-                sort(orderBy(descending(s"$range $aspect"))),
-                project(fields(include(s"$range $aspect")))
-              
-              )
-            )
-            .printResults()
-
-     */   
-/* 
-    def aggAvg(){
-
-      
-      var aspect = "Barking"
-      var aggregate = "$Energy"
-
-
-
-      import org.mongodb.scala.model.Accumulators._
-      println(s"Average $aspect by $aggregate")
-      val results = collection.
-            aggregate(
-              Seq(
-                sort(orderBy(descending(aspect))),
-                group(
-                  aggregate,
-                  avg(aspect, "$"+s"$aspect")           
-                    ),
-                sort(orderBy(descending(aspect))),
-                project(fields(include(aspect)))
-              
-              )
-            )
-            .printResults()
-
-        */
-        
-
-
-
-        /* 
-      collection
-        .find()
-        .sort(descending("Max Weight"))
-        .projection(fields(include("Max Weight", "Energy"),excludeId()))
-        .printResults()
-    
- */
-
-    def groupBy(){
-
-    val playersDoc: Any =""
-    var aggregate = ""
-    var criteria = ""
-    var z = 0
-
-
-
-
-      
-      
-
-      def aspectList(){
-        println("[1] Group\n[2] Min Height\n[3] Max Height\n" +
-          "[4] Min Weight\n[5] Max Weight\n[6] Affection For Family\n" +
-          "[7] Good With Young Children\n[8] Good With Other Dogs\n" +
-          "[9] Shedding Level\n[10] Coat Grooming Frequency\n[11] Drooling Level\n" +
-          "[12] Coat Type\n[13] Coat Length\n[14] Openness To Strangers\n" +
-          "[15] Playfulness Level\n[16] Protective Nature\n[17] Adaptability\n" +
-          "[18] Trainability\n[19] Energy\n[20] Barking\n[21] Mental Stimulation Needs\n"              
-        )
-      }
-
-      def groupByPrompt(){   
-        println   
-        println("Select the Criteria you would like to Group By:")
-        aspectList()
-          def groupByPromptRecurse(){
-          val a: String = scala.io.StdIn.readLine("Please enter the corresponding number: ")
-          a match{
-            case "1" => aggregate = "Group"
-            case "2" => aggregate = "Min Height"          
-            case "3" => aggregate = "Max Height"                  
-            case "4" => aggregate= "Min Weight"       
-            case "5" => aggregate = "Max Weight"                 
-            case "6" => aggregate= "Affection For Family"
-            case "7" => aggregate= "Good With Young Children"          
-            case "8" => aggregate= "Good With Other Dogs"                  
-            case "9" => aggregate= "Shedding Level"       
-            case "10" => aggregate = "Coat Grooming Frequency"                 
-            case "11" => aggregate= "Drooling Level" 
-            case "12" =>  aggregate = "Coat Type"        
-            case "13" =>  aggregate= "Coat Length"
-            case "14" => aggregate = "Openness To Strangers"       
-            case "15" =>  aggregate = "Playfulness Level"        
-            case "16" =>  aggregate = "Protective Nature"        
-            case "17" =>   aggregate= "Adaptability"        
-            case "18" =>  aggregate= "Trainability"       
-            case "19" =>   aggregate= "Energy"       
-            case "20" =>   aggregate= "Barking"        
-            case "21" =>   aggregate= "Mental Stimulation Needs"
-            case _ => {
-              println("I'm sorry, that's not an option")
-              groupByPromptRecurse()
-            }
-          }
-          
-        }
-        groupByPromptRecurse()
-        avgCriteriaGroup()
-      }
-          
-
-    def avgCriteriaGroup(){
-
-      println(s"Fill in the Blank: You would like to see the average ______ by $aggregate")
-
-      aspectList()
-        def avgCriteriaGroupRecurse(){
-          val a: String = scala.io.StdIn.readLine("Please enter the corresponding number: ")
-          a match{
-            case "1" =>{
-              criteria = "Group" 
-              z=1
-            }
-            case "2" => {
-              criteria = "Min Height"          
-              z=2
-            }
-            case "3" =>{
-            criteria = "Max Height"
-            z=3
-            }                   
-            case "4" =>{
-             criteria = "Min Weight" 
-             z=4
-            }      
-            case "5" =>{
-            criteria = "Max Weight"
-            z=5
-            }             
-            case "6" =>{
-             criteria = "Affection For Family"
-             z=6
-            }
-            case "7" =>{
-            criteria = "Good With Young Children"  
-            z=7  
-            }       
-            case "8" =>{
-            criteria = "Good With Other Dogs"  
-            z=8
-            }                 
-            case "9" =>{
-            criteria = "Shedding Level"   
-            z=9
-            }     
-            case "10" =>{
-            criteria = "Coat Grooming Frequency"  
-            z=10
-            }                
-            case "11" =>{
-            criteria = "Drooling Level" 
-            z=11
-            } 
-            case "12" =>{
-            criteria = "Coat Type"
-            z=12
-            }          
-            case "13" =>{
-             criteria = "Coat Length"
-             z=13
-            } 
-            case "14" =>{
-            criteria = "Openness To Strangers" 
-            z=14
-            }       
-            case "15" =>{
-             criteria = "Playfulness Level"   
-             z=15
-            }      
-            case "16" =>{
-            criteria = "Protective Nature"   
-            z=16
-            }      
-            case "17" =>{
-             criteria = "Adaptability"     
-             z=17
-            }    
-            case "18" =>{
-            criteria = "Trainability"    
-            z=18
-            }    
-            case "19" =>{
-            criteria = "Energy"
-            z=19
-            }         
-            case "20" =>{
-            criteria = "Barking"  
-            z=20
-            }        
-            case "21" =>{
-            criteria = "Mental Stimulation Needs"
-            z=21
-            }  
-            case _ => {
-              println("I;m sorry, that's not an option")
-              avgCriteriaGroupRecurse()
-            }
-          }
-        }
-        avgCriteriaGroupRecurse()
-        traitAgg()
- 
-    }//End of avgCriteriaGroup()
-
-
-
-
-    def traitAgg(){
-    
-    import org.mongodb.scala.model.Accumulators._
-    println(s"Average $aggregate by $criteria")
-    val results = collection.
-          aggregate(
-            Seq(              
-              group(
-                "$"+ aggregate,
-                avg(criteria,"$"+ criteria),                            
-                  ),
-              sort(descending(criteria)),           
-            )
-          )
-          .results()
-
-          import net.liftweb.json._
-          implicit val formats = DefaultFormats
-          for (dog <- results){
-            val jsonString = dog.toJson().toLowerCase().replaceAll("\\s","")
-            val jValue = parse(jsonString)
-
-            z match{
-            case 1 =>  {
-              //criteria = "Group"
-              case class Dog(_id: String, group: String)
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.group}").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }
-            case 2 => {
-              //criteria = "Min Height"
-              case class Dog(_id: String, minheight: Double)
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.minheight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)            
-            }         
-            case 3 => {
-              //criteria = "Max Height"
-              case class Dog(_id: String, maxheight: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxheight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-           }                 
-            case 4 =>{
-              //criteria = "Min Weight"
-              case class Dog(_id: String, minweight: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.minweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b) 
-             }      
-            case 5 =>{
-              //criteria = "Max Weight"
-              case class Dog(_id: String, maxweight: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }              
-            case 6 =>{             
-              //criteria = "Affection For Family"
-              case class Dog(_id: String, affectionforfamily: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.affectionforfamily}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            } 
-            case 7 =>{
-              //criteria = "Good With Young Children"
-              case class Dog(_id: String, goodwithyoungchildren: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.goodwithyoungchildren}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-              }           
-            case 8 =>{
-              //criteria = "Good With Other Dogs"
-              case class Dog(_id: String, goodwithotherdogs: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.goodwithotherdogs}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }                   
-            case 9 =>{
-              //criteria = "Shedding Level"
-              case class Dog(_id: String, sheddinglevel: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.sheddinglevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }        
-            case 10 =>{
-              //criteria = "Coat Grooming Frequency"
-              case class Dog(_id: String, coatgroomingfrequency: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coatgroomingfrequency}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }                  
-            case 11 =>{
-              //criteria = "Drooling Level"
-              case class Dog(_id: String, droolinglevel: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.droolinglevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            } 
-            case 12 =>{
-              //criteria = "Coat Type"
-              case class Dog(_id: String, coattype: String)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coattype}").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }          
-            case 13 =>{
-              //criteria = "Coat Length"
-              case class Dog(_id: String, coatlength: String)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.coatlength}").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }  
-            case 14 =>{ 
-              //criteria = "Openness To Strangers"
-              case class Dog(_id: String, opennesstostrangers: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.opennesstostrangers}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }       
-            case 15 =>{
-              //criteria = "Playfulness Level"
-              case class Dog(_id: String, playfulnesslevel: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.playfulnesslevel}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }          
-            case 16 =>{
-              //criteria = "Protective Nature"
-              case class Dog(_id: String, protectivenature: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.protectivenature}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }        
-            case 17 =>{
-            //criteria = "Adaptability"
-              case class Dog(_id: String, adaptability: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.adaptability}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }         
-            case 18 =>{
-              //criteria = "Trainability"
-              case class Dog(_id: String, trainability: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.trainability}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }        
-            case 19 =>{
-              //criteria = "Energy"
-              case class Dog(_id: String, energy: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.energy}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }         
-            case 20 =>{
-              //criteria = "Barking"
-              case class Dog(_id: String, barking: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.barking}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }          
-            case 21 =>{
-              //criteria = "Mental Stimulation Needs"
-              case class Dog(_id: String, mentalstimulationneeds: Double)          
-              val playersDoc = jValue.extract[Dog]
-              var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.mentalstimulationneeds}%.2f").split(" ").map(_.capitalize).mkString(" ")
-              println(b)
-            }  
-            /* case _ => {
-              println("I;m sorry, that's not an option")
-              
-            } */
-          }
-
-
-            
-/* 
-            if (z == 5){
-            case class DogTEST(_id: String, maxweight: Double)
-            val playersDoc = jValue.extract[DogTEST]
-            var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-            println(b)
- */
-
-
-
-
-            
-
-
-
-
-
-
-            }
-            
-
-
-
-            
-            
-            
-
-          
-
-
-
-
-        }
-
-        
-        groupByPrompt()
-
-
-
-
-        directory()
-    }//End of groupBy()
-     //groupBy()
-
-
-
-
-
-
-
-/* 
-import org.mongodb.scala.model.Accumulators._
-    println(s"Average $aggregate by $criteria")
-    val results = collection.
-          aggregate(
-            Seq(
-              //sort(descending("Energy")),
-              group(
-                aggregate,
-                avg(criteria,"$"+ criteria),                            
-                  ),
-              sort(descending(criteria)),
-              //sort(orderBy(descending("Max Weight"))),
-            
-              //project(fields(include("Max Weight", "Energy"),excludeId()))
-            
-            )
-          )
-          .printResults() */
-
-
-
-
-
-
-
-
-
-
-
-
-/* 
-
-    def jsonParse(){
-
-      var criteria = "Max Weight"
-      var aggregate = "Group"
-
-
-
-      import org.mongodb.scala.model.Accumulators._
-
-      import org.mongodb.scala.model.Accumulators._
-      println(s"Average $aggregate by $criteria")
-    val results = collection.
-          aggregate(
-            Seq(              
-              group(
-                "$"+ aggregate,
-                avg(criteria,"$"+ criteria),                            
-                  ),
-              sort(descending(criteria)),           
-            )
-          )
-          .results()
-
-
-
-         //FORMATING/////////////////////////// 
-        import net.liftweb.json._
-        implicit val formats = DefaultFormats
-        for (dog <- results){
-          val jsonString = dog.toJson().toLowerCase().replaceAll("\\s","")
-          val jValue = parse(jsonString)
-
-          case class Dog(_id: String, maxweight: Double)          
-          val playersDoc = jValue.extract[Dog]
-          var b = (f"$aggregate: ${playersDoc._id}, $criteria: ${playersDoc.maxweight}%.2f").split(" ").map(_.capitalize).mkString(" ")
-          println(b)
-        }
-
-        case class Dog1(_id: String, group: Double)
-        case class Dog2(_id: String, minheight: Double)
-        case class Dog3(_id: String, maxheight: Double)
-        case class Dog4(_id: String, minweight: Double)
-        case class Dog5(_id: String, maxweight: Double)
-        case class Dog6(_id: String, affectionforfamily: Double)
-        case class Dog7(_id: String, goodwithyoungchildren: Double)
-        case class Dog8(_id: String, goodwithotherdogs: Double)
-        case class Dog9(_id: String, sheddinglevel: Double)
-        case class Dog10(_id: String, coatgroomingfrequency: Double)
-        case class Dog11(_id: String, droolinglevel: Double)
-        case class Dog12(_id: String, coattype: Double)
-        case class Dog13(_id: String, coatlength: Double)
-        case class Dog14(_id: String, opennesstostrangers: Double)
-        case class Dog15(_id: String, playfulnesslevel: Double)
-        case class Dog16(_id: String, protectivenature: Double)
-        case class Dog17(_id: String, adaptability: Double)
-        case class Dog18(_id: String, trainability: Double)
-        case class Dog19(_id: String, energy: Double)
-        case class Dog20(_id: String, barking: Double)
-        case class Dog21(_id: String, mentalstimulationneeds: Double)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* 
-
-        import net.liftweb.json._
-        //implicit val formats = DefaultFormats
-
-        // Class mapped to the JSON output of the Players collection.
-        case class Dog(_id: String, Energy: Double)
-
-        println("Dog as JSON...")
-
-        for (dog <- results){
-        // Convert the doc into a proper JSON string.
-        val jsonString = dog.toJson()
-        println(jsonString)
-
-
-
-        // Convert the JSON string into a JSON object.
-        val jValue = parse(jsonString)
-          // create a Player object from the string
-        val playersDoc = jValue.extract[Dog]
-
-        // Calculate the total points and print.
-      //val total = playersDoc.breed + playersDoc.energy
-      println(s"Player: ${playersDoc._id}, goals: ${playersDoc.energy}, assists: ${playersDoc.maxHeight}")
-     
-
-        }
-        
-
- */
-
-      } */
-     //jsonParse()
-
-
-
-
-
-
-      //Alt project w/ 'round': project(fields(include(round("Max Weight",2))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      }//End of 'a match{'
+    }//End of directory()
     //First function of the program
     showDatabases()
     
@@ -1579,4 +1161,3 @@ import org.mongodb.scala.model.Accumulators._
     client.close()
   }
 }
-
