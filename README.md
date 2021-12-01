@@ -2,7 +2,7 @@
 
 ## Project Description
 With this application, a user is able to:
--Dataset Related Functions
+- Dataset Related Functions
   -Add a Breed
   -Remove a Breed
   -Update a Breed
