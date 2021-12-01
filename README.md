@@ -45,4 +45,4 @@ By typing '--help' in the Command Line, all Functions will be displayed
 
 NOTE: Must be run in sbt shell
 
-Please Enjoy :simple_smile:
+Please Enjoy ::simple_smile::
