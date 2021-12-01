@@ -30,7 +30,7 @@ With this application, a user is able to:
 
 
 * Find a breed that suits your lifestyle by chaining together 'Search by' Functions
-* Perform low level Analytics with the 'Group by()' Function 
+* Perform low level Analytics with the 'Group by' Function 
 
 ## Getting Started
 
