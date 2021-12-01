@@ -10,13 +10,13 @@ With this application, a user is able to:
   - Aggregate by Size, Group, or Trait
   
  - Mongo Related Functions
-  - Select Database
-  - Drop Database
-  - Show Database
-  - Select Collection
-  - Drop Collections
-  - Show Collections
-  - Count Documents
+    - Select Database
+    - Drop Database
+   - Show Database
+    - Select Collection
+   - Drop Collections
+    - Show Collections
+   - Count Documents
   
  - FS Related Functions
   - Read flat JSON Files
