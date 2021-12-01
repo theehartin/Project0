@@ -3,23 +3,23 @@
 ## Project Description
 With this application, a user is able to:
 - Dataset Related Functions
-  -Add a Breed
-  -Remove a Breed
-  -Update a Breed
-  -Search by Size, Group, or Trait
-  -Aggregate by Size, Group, or Trait
+  - Add a Breed
+  - Remove a Breed
+  - Update a Breed
+  - Search by Size, Group, or Trait
+  - Aggregate by Size, Group, or Trait
   
- -Mongo Related Functions
-  -Select Database
-  -Drop Database
-  -Show Database
-  -Select Collection
-  -Drop Collections
-  -Show Collections
-  -Count Documents
+ - Mongo Related Functions
+  - Select Database
+  - Drop Database
+  - Show Database
+  - Select Collection
+  - Drop Collections
+  - Show Collections
+  - Count Documents
   
- -FS Related Functions
-  -Read flat JSON Files
+ - FS Related Functions
+  - Read flat JSON Files
 
 ## Technologies Used
 
