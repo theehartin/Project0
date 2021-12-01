@@ -419,13 +419,7 @@ object MongoDemo {
         }//End of 'a match'
       }//end of confirmationNo()
 
-/* 
 
-      //Establishing Breed
-      var f: String = scala.io.StdIn.readLine("which Breed would you like to Remove?: ").trim()
-
-
- */
       //Confirmation of Deletion
       def confirmationRecursion(){
         var confirmation: String = scala.io.StdIn.readLine(s"Confirm: Remove the $breed from the AKC? (yes or no): ").toLowerCase().trim()
@@ -697,13 +691,13 @@ object MongoDemo {
             case "5" => dogTrait = "Coat Grooming Frequency"                 
             case "6" => dogTrait = "Drooling Level"              
             case "7" => dogTrait = "Openness To Strangers"       
-            case "8" =>  dogTrait = "Playfulness Level"        
+            case "8" => dogTrait = "Playfulness Level"        
             case "9" => dogTrait = "Protective Nature"        
-            case "10" =>  dogTrait = "Adaptability"        
+            case "10" => dogTrait = "Adaptability"        
             case "11" => dogTrait = "Trainability"       
-            case "12" =>  dogTrait = "Energy"       
-            case "13" =>  dogTrait = "Barking"        
-            case "14" =>  dogTrait = "Mental Stimulation Needs"
+            case "12" => dogTrait = "Energy"       
+            case "13" => dogTrait = "Barking"        
+            case "14" => dogTrait = "Mental Stimulation Needs"
             case _ => {
               println("I;m sorry, that's not an option")
               traitPrompt()
@@ -804,80 +798,80 @@ object MongoDemo {
             aspect=2
           }
           case "3" =>{
-          criteria = "Max Height"
-          aspect=3
+            criteria = "Max Height"
+            aspect=3
           }                   
           case "4" =>{
             criteria = "Min Weight" 
             aspect=4
           }      
           case "5" =>{
-          criteria = "Max Weight"
-          aspect=5
+            criteria = "Max Weight"
+            aspect=5
           }             
           case "6" =>{
             criteria = "Affection For Family"
             aspect=6
           }
           case "7" =>{
-          criteria = "Good With Young Children"  
-          aspect=7  
+            criteria = "Good With Young Children"  
+            aspect=7  
           }       
           case "8" =>{
-          criteria = "Good With Other Dogs"  
-          aspect=8
+            criteria = "Good With Other Dogs"  
+            aspect=8
           }                 
           case "9" =>{
-          criteria = "Shedding Level"   
-          aspect=9
+            criteria = "Shedding Level"   
+            aspect=9
           }     
           case "10" =>{
-          criteria = "Coat Grooming Frequency"  
-          aspect=10
+            criteria = "Coat Grooming Frequency"  
+            aspect=10
           }                
           case "11" =>{
-          criteria = "Drooling Level" 
-          aspect=11
+            criteria = "Drooling Level" 
+            aspect=11
           } 
           case "12" =>{
-          criteria = "Coat Type"
-          aspect=12
+            criteria = "Coat Type"
+            aspect=12
           }          
           case "13" =>{
             criteria = "Coat Length"
             aspect=13
           } 
           case "14" =>{
-          criteria = "Openness To Strangers" 
-          aspect=14
+            criteria = "Openness To Strangers" 
+            aspect=14
           }       
           case "15" =>{
             criteria = "Playfulness Level"   
             aspect=15
           }      
           case "16" =>{
-          criteria = "Protective Nature"   
-          aspect=16
+            criteria = "Protective Nature"   
+            aspect=16
           }      
           case "17" =>{
             criteria = "Adaptability"     
             aspect=17
           }    
           case "18" =>{
-          criteria = "Trainability"    
-          aspect=18
+            criteria = "Trainability"    
+            aspect=18
           }    
           case "19" =>{
-          criteria = "Energy"
-          aspect=19
+            criteria = "Energy"
+            aspect=19
           }         
           case "20" =>{
-          criteria = "Barking"  
-          aspect=20
+            criteria = "Barking"  
+            aspect=20
           }        
           case "21" =>{
-          criteria = "Mental Stimulation Needs"
-          aspect=21
+            criteria = "Mental Stimulation Needs"
+            aspect=21
           }  
           case _ => {
             println("I'm sorry, that's not an option")
@@ -1161,3 +1155,4 @@ object MongoDemo {
     client.close()
   }
 }
+
