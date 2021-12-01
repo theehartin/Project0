@@ -40,9 +40,9 @@ List of features ready and TODOs for future development
 4. Type 'readFile()' in Command line
 5. Provide File Path
 
-And you're off! 
+And you're off!\
 By typing '--help' in the Command Line, all Functions will be displayed
 
 NOTE: Must be run in sbt shell
 
-Please Enjoy
+Please Enjoy :simple_smile:
