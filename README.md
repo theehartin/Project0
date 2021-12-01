@@ -19,7 +19,7 @@ With this application, a user is able to:
    - Count Documents
   
  - FS Related Functions
-  - Read flat JSON Files
+   - Read flat JSON Files
 
 ## Technologies Used
 
